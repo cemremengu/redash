@@ -12,6 +12,27 @@ FROM python:3.7-slim
 
 EXPOSE 5000
 
+RUN apt-get update  -y
+RUN apt-get install -y unzip
+RUN apt-get install -y libaio-dev  # depends on Oracle
+RUN apt-get clean -y
+
+# Oracle instantclient
+ADD oracle/instantclient-basic-linux.x64-19.5.0.0.0dbru.zip /tmp/instantclient-basic-linux.zip
+ADD oracle/instantclient-sdk-linux.x64-19.5.0.0.0dbru.zip /tmp/instantclient-sdk-linux.zip
+
+RUN unzip /tmp/instantclient-basic-linux.zip -d /usr/local/
+RUN unzip /tmp/instantclient-sdk-linux.zip -d /usr/local/
+RUN ln -sf /usr/local/instantclient_19_5 /usr/local/instantclient
+RUN ln -sf /usr/local/instantclient/libclntsh.so.19.1 /usr/local/instantclient/libclntsh.so
+
+ENV ORACLE_HOME=/usr/local/instantclient
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/instantclient
+
+# Add REDASH ENV to add Oracle Query Runner
+ENV REDASH_ADDITIONAL_QUERY_RUNNERS=redash.query_runner.oracle
+# -- End setup Oracle
+
 # Controls whether to install extra dependencies needed for all data sources.
 ARG skip_ds_deps
 
@@ -44,9 +65,9 @@ WORKDIR /app
 
 # We first copy only the requirements file, to avoid rebuilding on every file
 # change.
-COPY requirements.txt requirements_bundles.txt requirements_dev.txt requirements_all_ds.txt ./
-RUN pip install -r requirements.txt -r requirements_dev.txt
-RUN if [ "x$skip_ds_deps" = "x" ] ; then pip install -r requirements_all_ds.txt ; else echo "Skipping pip install -r requirements_all_ds.txt" ; fi
+COPY requirements.txt requirements_bundles.txt requirements_dev.txt requirements_oracle_ds.txt requirements_all_ds.txt ./
+RUN pip install -r requirements.txt -r requirements_dev.txt -r requirements_oracle_ds.txt
+RUN if [ "y$skip_ds_deps" = "n" ] ; then pip install -r requirements_all_ds.txt ; else echo "Skipping pip install -r requirements_all_ds.txt" ; fi
 
 COPY . /app
 COPY --from=frontend-builder /frontend/client/dist /app/client/dist
