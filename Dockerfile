@@ -18,10 +18,10 @@ RUN apt-get install -y libaio-dev  # depends on Oracle
 RUN apt-get clean -y
 
 # Oracle instantclient
-ADD oracle/instantclient-basic-linux.x64-19.5.0.0.0dbru.zip /tmp/instantclient-basic-linux.zip
+ADD oracle/instantclient-basiclite-linux.x64-19.5.0.0.0dbru.zip /tmp/instantclient-basiclite-linux.zip
 ADD oracle/instantclient-sdk-linux.x64-19.5.0.0.0dbru.zip /tmp/instantclient-sdk-linux.zip
 
-RUN unzip /tmp/instantclient-basic-linux.zip -d /usr/local/
+RUN unzip /tmp/instantclient-basiclite-linux.zip -d /usr/local/
 RUN unzip /tmp/instantclient-sdk-linux.zip -d /usr/local/
 RUN ln -sf /usr/local/instantclient_19_5 /usr/local/instantclient
 RUN ln -sf /usr/local/instantclient/libclntsh.so.19.1 /usr/local/instantclient/libclntsh.so

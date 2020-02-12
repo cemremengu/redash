@@ -1,4 +1,4 @@
 # Make sure the Oracle directory has
-#    instantclient-sdk-linux.x64-19.5.0.0.0dbru
+#    instantclient-basiclite-linux.x64-19.5.0.0.0dbru
 #    instantclient-sdk-linux.x64-19.5.0.0.0dbru
 cx_Oracle==7.3
